@@ -1,3 +1,7 @@
 import { Settings as HttpSettings } from '@vultuk/microservice-http';
 
-export type Settings = HttpSettings;
+export type GraphQLSettings = {
+  path: string;
+};
+
+export type Settings = HttpSettings & GraphQLSettings;
