@@ -1,13 +1,13 @@
-import { IExecutableSchemaDefinition } from "@graphql-tools/schema";
+import { IExecutableSchemaDefinition } from '@graphql-tools/schema';
 import {
   Microservice as HttpMicroservice,
   Route,
-} from "@vultuk/microservice-http";
-import { ApolloServer } from "apollo-server-express";
-import { Settings } from "./types/graphQLSettings";
-import { SchemaResolvers } from "./types/schemaResolver";
+} from '@vultuk/microservice-http';
+import { ApolloServer } from 'apollo-server-express';
+import { Settings } from './types/graphQLSettings';
+import { SchemaResolvers } from './types/schemaResolver';
 
-export * from "./types/graphQLSettings";
+export * from './types/graphQLSettings';
 
 export const Microservice =
   (settings?: Settings) =>
@@ -25,24 +25,24 @@ export const Microservice =
     const server = new ApolloServer({
       typeDefs: schemaResolvers.map(
         (i) => i.schema
-      ) as IExecutableSchemaDefinition["typeDefs"],
+      ) as IExecutableSchemaDefinition['typeDefs'],
       resolvers: schemaResolvers.map(
         (i) => i.resolvers
-      ) as IExecutableSchemaDefinition["resolvers"],
+      ) as IExecutableSchemaDefinition['resolvers'],
       context: ({ req }) => {
         return { req, res: req.res };
       },
     });
 
-    return server.start().then(() => {
-      return HttpMicroservice(settings)(middleware, [
-        ...(appOnlyMiddleware || []),
-        (app: any) => {
-          server.applyMiddleware({
-            app,
-            path: settings?.path || "/",
-          });
-        },
-      ])(routes);
-    });
+    server.start();
+
+    return HttpMicroservice(settings)(middleware, [
+      ...(appOnlyMiddleware || []),
+      (app: any) => {
+        server.applyMiddleware({
+          app,
+          path: settings?.path || '/',
+        });
+      },
+    ])(routes);
   };
