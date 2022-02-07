@@ -1,5 +1,5 @@
 {
-  "name": "@vultuk/microservice-graphql",
+  "name": "@vultuk/microservice-http-graphql",
   "private": false,
   "version": "1.2.13",
   "description": "",
