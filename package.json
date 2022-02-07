@@ -1,7 +1,7 @@
 {
   "name": "@vultuk/microservice-http-graphql",
   "private": false,
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
