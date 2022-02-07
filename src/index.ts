@@ -1,12 +1,12 @@
 import {
   Microservice as HttpMicroservice,
   Route,
-} from '@vultuk/microservice-http';
-import { ApolloServer } from 'apollo-server-express';
-import { Settings } from './types/graphQLSettings';
-import { SchemaResolvers } from './types/schemaResolver';
+} from "@vultuk/microservice-http";
+import { ApolloServer } from "apollo-server-express";
+import { Settings } from "./types/graphQLSettings";
+import { SchemaResolvers } from "./types/schemaResolver";
 
-export * from './types/graphQLSettings';
+export * from "./types/graphQLSettings";
 
 export const Microservice =
   (settings?: Settings) =>
@@ -36,7 +36,7 @@ export const Microservice =
       (app: any) => {
         server.applyMiddleware({
           app,
-          path: settings?.path || '/',
+          path: settings?.path || "/",
         });
       },
     ])(routes);
