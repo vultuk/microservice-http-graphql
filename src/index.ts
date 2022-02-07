@@ -1,3 +1,4 @@
+import { IExecutableSchemaDefinition } from '@graphql-tools/schema';
 import {
   Microservice as HttpMicroservice,
   Route,
@@ -11,7 +12,7 @@ export * from './types/graphQLSettings';
 export const Microservice =
   (settings?: Settings) =>
   (middleware?: any[], appOnlyMiddleware?: any[]) =>
-  (routes: Route[], schemaResolvers?: SchemaResolvers) => {
+  (routes: Route[], schemaResolvers: SchemaResolvers) => {
     routes.forEach((route) => {
       // Check we aren't trying to use GraphQL at the same time as another Route
       if (settings && route.path === settings.path) {
@@ -22,12 +23,26 @@ export const Microservice =
     });
 
     const server = new ApolloServer({
-      typeDefs: schemaResolvers.map((i) => i.schema),
-      resolvers: schemaResolvers.map((i) => i.resolvers),
+      typeDefs: schemaResolvers.map(
+        (i) => i.schema
+      ) as IExecutableSchemaDefinition['typeDefs'],
+      resolvers: schemaResolvers.map(
+        (i) => i.resolvers
+      ) as IExecutableSchemaDefinition['resolvers'],
       context: ({ req }) => {
         return { req, res: req.res };
       },
     });
 
-    return HttpMicroservice(settings)(middleware, appOnlyMiddleware)(routes);
+    return server.start().then(() => {
+      return HttpMicroservice(settings)(middleware, [
+        ...(appOnlyMiddleware || []),
+        (app: any) => {
+          server.applyMiddleware({
+            app,
+            path: settings?.path || '/',
+          });
+        },
+      ])(routes);
+    });
   };
