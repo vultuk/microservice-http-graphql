@@ -1,13 +1,14 @@
+import { IExecutableSchemaDefinition } from '@graphql-tools/schema';
 import {
   Microservice as HttpMicroservice,
   Route,
-} from "@vultuk/microservice-http";
-import { ApolloServer } from "apollo-server-express";
-import { Settings } from "./types/graphQLSettings";
-import { SchemaResolvers } from "./types/schemaResolver";
+} from '@vultuk/microservice-http';
+import { ApolloServer } from 'apollo-server-express';
+import { Settings } from './types/graphQLSettings';
+import { SchemaResolvers } from './types/schemaResolver';
 
-export * from "apollo-server-express";
-export * from "./types";
+export * from 'apollo-server-express';
+export * from './types';
 
 export const Microservice =
   (settings?: Settings) =>
@@ -15,7 +16,7 @@ export const Microservice =
   (routes: Route[], schemaResolvers?: SchemaResolvers): Promise<() => void> => {
     routes.forEach((route) => {
       // Check we aren't trying to use GraphQL at the same time as another Route
-      if (settings?.path && settings?.path === "/") {
+      if (settings?.path && settings?.path === '/') {
         throw new Error(`Can't register the GraphQL server on the path '/'`);
       }
 
@@ -28,15 +29,20 @@ export const Microservice =
 
     if (
       schemaResolvers &&
-      schemaResolvers.schema &&
-      schemaResolvers.resolvers
+      schemaResolvers.length > 0 &&
+      schemaResolvers[0].schema &&
+      schemaResolvers[0].resolvers
     ) {
       console.error(
-        "No Graphql Schema or Resolvers passed. This service will not serve GraphQL requests."
+        'No Graphql Schema or Resolvers passed. This service will not serve GraphQL requests.'
       );
       const server = new ApolloServer({
-        typeDefs: schemaResolvers.schema,
-        resolvers: schemaResolvers.resolvers,
+        typeDefs: schemaResolvers.map(
+          (i) => i.schema
+        ) as IExecutableSchemaDefinition['typeDefs'],
+        resolvers: schemaResolvers.map(
+          (i) => i.resolvers
+        ) as IExecutableSchemaDefinition['resolvers'],
         context: ({ req }) => {
           return { req, res: req.res };
         },
@@ -48,7 +54,7 @@ export const Microservice =
           (app: any) => {
             server.applyMiddleware({
               app,
-              path: settings?.path || "/graphql",
+              path: settings?.path || '/graphql',
             });
           },
         ])(routes);
