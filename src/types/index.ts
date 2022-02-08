@@ -1,2 +1,2 @@
-export * from './graphQLSettings';
-export * from './schemaResolver';
+export * from "./graphQLSettings";
+export * from "./schemaResolver";
